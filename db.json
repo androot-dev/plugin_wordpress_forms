@@ -1,0 +1,41 @@
+{
+    "tables": {
+        "_iu_forms": {
+            "name_forms": "varchar(255) NOT NULL",
+            "category": "varchar(100) NOT NULL",
+            "description": "varchar(300) NOT NULL",
+            "file": "varchar(300) NOT NULL",
+            "created_at": "datetime NOT NULL",
+            "update_at": "datetime NOT NULL"
+        },
+        "_iu_clients": {
+            "name": "varchar(100) NOT NULL",
+            "email": "varchar(100) NOT NULL",
+            "phone_1": "varchar(20) NOT NULL",
+            "phone_2": "varchar(20) NOT NULL",
+            "address": "varchar(100) NOT NULL",
+            "created_at": "datetime NOT NULL",
+            "update_at": "datetime NOT NULL"
+        },
+        "_iu_forms_submits": {
+            "id_form": "int(11) NOT NULL",
+            "id_client": "int(11) NOT NULL",
+            "matters": "varchar(100)",
+            "status": "varchar(100) NOT NULL",
+            "created_at": "datetime NOT NULL",
+            "update_at": "datetime NOT NULL"
+        }
+    },
+    "foreigh_keys": {
+        "_iu_forms_submits": {
+            "id_form": {
+                "table": "_iu_forms",
+                "column": "id"
+            },
+            "id_client": {
+                "table": "_iu_clients",
+                "column": "id"
+            }
+        }
+    }
+}

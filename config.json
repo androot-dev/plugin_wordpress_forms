@@ -1,0 +1,24 @@
+{
+    "plugin_name": "ui-forms",
+    "pages": [
+        {
+            "location": 4,
+            "title": "IU Forms",
+            "menu": "IU Forms",
+            "slug": "iu-forms",
+            "icon": "dashicons-feedback",
+            "permission": "manage_options",
+            "page": [
+                "views/forms.php"
+            ],
+            "scripts": [
+                "js/bootstrap.js"
+            ],
+            "styles": [
+                "css/bootstrap.css",
+                "css/theme.css"
+            ],
+            "option_page": false
+        }
+    ]
+}
