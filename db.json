@@ -4,26 +4,21 @@
             "name_forms": "varchar(255) NOT NULL",
             "category": "varchar(100) NOT NULL",
             "description": "varchar(300) NOT NULL",
-            "file": "varchar(300) NOT NULL",
-            "created_at": "datetime NOT NULL",
-            "update_at": "datetime NOT NULL"
+            "file": "varchar(300) NOT NULL"
         },
         "_iu_clients": {
             "name": "varchar(100) NOT NULL",
             "email": "varchar(100) NOT NULL",
             "phone_1": "varchar(20) NOT NULL",
             "phone_2": "varchar(20) NOT NULL",
-            "address": "varchar(100) NOT NULL",
-            "created_at": "datetime NOT NULL",
-            "update_at": "datetime NOT NULL"
+            "address": "varchar(100) NOT NULL"
         },
         "_iu_forms_submits": {
             "id_form": "int(11) NOT NULL",
             "id_client": "int(11) NOT NULL",
             "matters": "varchar(100)",
             "status": "varchar(100) NOT NULL",
-            "created_at": "datetime NOT NULL",
-            "update_at": "datetime NOT NULL"
+            "post_data": "varchar(1000)"
         }
     },
     "foreigh_keys": {
@@ -37,5 +32,6 @@
                 "column": "id"
             }
         }
-    }
+    },
+    "enable_api": true
 }

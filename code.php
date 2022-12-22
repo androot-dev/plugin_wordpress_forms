@@ -32,8 +32,14 @@ Author: Silvera Enterprises
     establece la estructura de las tablas de la base de datos para este plugin en la propiedad table y en la 
     propiedad foreign_keys las llaves foraneas
 */
+
 $config = [];
 $db = [];
+
+function ui_log($msg)
+{
+    echo "<script>console.log('UI Plugin: " . $msg . "')</script>";
+}
 
 function getConfig($param = null)
 {
@@ -45,15 +51,16 @@ function getConfig($param = null)
     }
     return $param ? $config[$param] : $config;
 }
-function getDB()
+function getDB($param = null)
 {
     global $db;
     if (empty($db)) {
         $db = file_get_contents(plugin_dir_path(__FILE__) . 'db.json');
         $db = json_decode($db, true);
     }
-    return $db;
+    return $param ? $db[$param] : $db;
 }
+
 function iu_forms_submenu_init()
 {
     $config = getConfig();
@@ -186,95 +193,92 @@ function custom_forms_enqueue_specific_admin_styles()
     }
 }
 add_action('admin_enqueue_scripts', 'custom_forms_enqueue_specific_admin_styles');
-/*
-DB EXAMPLE
-{
-    "tables": {
-        "_iu_forms": {
-            "name_forms": "varchar(255) NOT NULL",
-            "category": "varchar(100) NOT NULL",
-            "description": "varchar(300) NOT NULL",
-            "file": "varchar(300) NOT NULL",
-            "created_at": "datetime NOT NULL",
-            "update_at": "datetime NOT NULL"
-        },
-        "_iu_clients": {
-            "name": "varchar(100) NOT NULL",
-            "email": "varchar(100) NOT NULL",
-            "phone_1": "varchar(20) NOT NULL",
-            "phone_2": "varchar(20) NOT NULL",
-            "address": "varchar(100) NOT NULL",
-            "created_at": "datetime NOT NULL",
-            "update_at": "datetime NOT NULL"
-        },
-        "_iu_forms_submits": {
-            "id_form": "int(11) NOT NULL",
-            "id_client": "int(11) NOT NULL",
-            "matters": "varchar(100)",
-            "status": "varchar(100) NOT NULL",
-            "created_at": "datetime NOT NULL",
-            "update_at": "datetime NOT NULL"
-        }
-    },
-    "foreigh_keys": {
-        "_iu_forms_submits": {
-            "id_form": {
-                "table": "_iu_forms",
-                "column": "id"
-            },
-            "id_client": {
-                "table": "_iu_clients",
-                "column": "id"
-            }
-        }
-    }
-}
-*/
-
 
 // Incluye el archivo 'wp-admin/includes/upgrade.php' para poder usar la función 'dbDelta'
 require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
+
 // Crea la función que se encargará de crear las tablas
 function iu_forms_create_tables()
 {
-    global $wpdb;
-    $json_db = getDB();
-    // Obtiene el prefijo de las tablas de la base de datos de WordPress
-    $table_prefix = $wpdb->prefix;
 
-    // Crea un array con las sentencias SQL que se usarán para crear las tablas
-    $tables_sql = array();
-    foreach ($json_db['tables'] as $table_name => $columns) {
-        // Construye la sentencia SQL para crear la tabla
-        $table_sql = "CREATE TABLE {$table_prefix}{$table_name} (";
-        $columns_sql = array();
-        $columns_sql[] = "id int(11) NOT NULL AUTO_INCREMENT";
-        foreach ($columns as $column_name => $column_definition) {
-            $columns_sql[] = "{$column_name} {$column_definition}";
+    try {
+        global $wpdb;
+        $json_db = getDB();
+        // Obtiene el prefijo de las tablas de la base de datos de WordPress
+        $table_prefix = $wpdb->prefix;
+
+        // Crea un array con las sentencias SQL que se usarán para crear las tablas
+        $tables_sql = array();
+
+        foreach ($json_db['tables'] as $table_name => $columns) {
+            // Construye la sentencia SQL para crear la tabla
+            $table_sql = "CREATE TABLE {$table_prefix}{$table_name} (";
+            $columns_sql = array();
+            $columns_sql[] = "id int(11) NOT NULL AUTO_INCREMENT";
+            foreach ($columns as $column_name => $column_definition) {
+                $columns_sql[] = "{$column_name} {$column_definition}";
+            }
+            $columns_sql[] = "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP";
+            $columns_sql[] = "updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+            $table_sql .= implode(', ', $columns_sql);
+            $table_sql .= ", PRIMARY KEY (id)";
+            $table_sql .= ") DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+            $tables_sql[] = $table_sql;
         }
-        $table_sql .= implode(', ', $columns_sql);
-        $table_sql .= ") CHARACTER SET utf8 COLLATE utf8_unicode_ci;";
-        $tables_sql[] = $table_sql;
-    }
-    // Ejecuta las sentencias SQL con la función 'dbDelta'
-    dbDelta($tables_sql);
+        // Ejecuta las sentencias SQL con la función 'dbDelta'
+        $res = dbDelta($tables_sql);
 
-    // Crea un array con las sentencias SQL que se usarán para crear las relaciones entre tablas
-    $relationships_sql = array();
-    foreach ($json_db['foreigh_keys'] as $table_name => $keys) {
-        foreach ($keys as $key_name => $key_definition) {
-            // Construye la sentencia SQL para crear la relación
-            $relationship_sql = "ALTER TABLE {$table_prefix}{$table_name} ADD FOREIGN KEY ({$key_name}) REFERENCES {$table_prefix}{$key_definition['table']}({$key_definition['column']});";
-            $relationships_sql[] = $relationship_sql;
+        if (isset($json_db['foreigh_keys'])) {
+            // Crea un array con las sentencias SQL que se usarán para crear las relaciones entre tablas
+            $relationships_sql = array();
+            foreach ($json_db['foreigh_keys'] as $table_name => $keys) {
+                foreach ($keys as $key_name => $key_definition) {
+                    // Construye la sentencia SQL para crear la relación
+                    $relationship_sql = "ALTER TABLE {$table_prefix}{$table_name} ADD FOREIGN KEY ({$key_name}) REFERENCES {$table_prefix}{$key_definition['table']}({$key_definition['column']});";
+                    $relationships_sql[] = $relationship_sql;
+                }
+            }
+            // Ejecuta las sentencias SQL para crear las relaciones
+            foreach ($relationships_sql as $sql) {
+                $wpdb->query($sql);
+            }
         }
-    }
-
-    // Ejecuta las sentencias SQL para crear las relaciones
-    foreach ($relationships_sql as $sql) {
-        $wpdb->query($sql);
+    } catch (Exception $e) {
+        error_log("PLUGIN UI FORMS: " . $e->getMessage());
     }
 }
 
-// Crea las tablas cuando el plugin es activado
-register_activation_hook(__FILE__, 'iu_forms_create_tables');
+
+
+if (count(getDB("tables")) > 0) {
+    register_activation_hook(__FILE__, 'iu_forms_create_tables');
+    $src = plugin_dir_path(__FILE__) . "controllers/DatabaseController.php";
+    include_once $src;
+    $api_enabled = isset($db["enable_api"]) ? true : false;
+    if ($api_enabled) {
+        include_once plugin_dir_path(__FILE__) . "API.php";
+    }
+}
+
+function request_api($methos, $url, $headers = null, $body = null)
+{
+
+    $response = wp_remote_request($url, array(
+        'method' => 'GET',
+        'timeout' => 45,
+        'redirection' => 5,
+        'httpversion' => '1.0',
+        'blocking' => true,
+        'headers' => $headers,
+        'body' => $body,
+        'cookies' => array()
+    ));
+
+    if (is_wp_error($response)) {
+        $error_message = $response->get_error_message();
+        echo "Something went wrong: $error_message";
+    } else {
+        return $response;
+    }
+}
