@@ -1,8 +1,7 @@
 {
-    "plugin_name": "ui-forms",
+    "plugin_folder_name": "ui-forms",
     "pages": [
         {
-            "location": 4,
             "title": "IU Forms",
             "menu": "IU Forms",
             "slug": "iu-forms",
@@ -18,7 +17,19 @@
                 "css/bootstrap.css",
                 "css/theme.css"
             ],
+            "location": 4,
             "option_page": false
+        }
+    ],
+    "posts": [
+        {
+            "post_title": "Form 2",
+            "post_content": "views/forms.php",
+            "post_type": "plugin",
+            "post_status": "publish",
+            "post_name": "form",
+            "post_parent": 0,
+            "page_template": "views/templates/admin.php"
         }
     ]
 }

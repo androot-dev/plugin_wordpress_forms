@@ -32,14 +32,22 @@ Author: Silvera Enterprises
     establece la estructura de las tablas de la base de datos para este plugin en la propiedad table y en la 
     propiedad foreign_keys las llaves foraneas
 */
+error_log("______________________________________PLUGIN LOADED________________________________________");
+error_log("______________________________________PLUGIN LOADED________________________________________");
+error_log("______________________________________PLUGIN LOADED________________________________________");
+error_log("______________________________________PLUGIN LOADED________________________________________");
+require_once plugin_dir_path(__FILE__) . 'controllers/CallbacksController.php';
+require_once plugin_dir_path(__FILE__) . 'controllers/PluginController.php';
+error_log("____________________________________PluginController________________________________________");
+error_log("____________________________________PluginController________________________________________");
+error_log("____________________________________PluginController________________________________________");
+error_log("____________________________________PluginController________________________________________");
+
+new plugin();
+/*
 
 $config = [];
 $db = [];
-
-function ui_log($msg)
-{
-    echo "<script>console.log('UI Plugin: " . $msg . "')</script>";
-}
 
 function getConfig($param = null)
 {
@@ -60,15 +68,41 @@ function getDB($param = null)
     }
     return $param ? $db[$param] : $db;
 }
+function my_plugin_activate()
+{
+    // Create a new page
+    $config = getConfig();
+    $posts = $config["posts"];
+
+    foreach ($posts as $post) {
+        $post_content = isset($post["post_content"]) ? plugin_dir_path(__FILE__) . $post["post_content"] : "";
+        if ($post_content) {
+            $post["post_content"] = file_get_contents($post_content);
+        }
+        $post_template = isset($post["page_template"]) ? plugin_dir_path(__FILE__) . $post["page_template"] : "";
+        if ($post_template) {
+            $post["page_template"] = $post_template;
+        }
+        $post_id = wp_insert_post($post);
+        error_log("POST ID: " . $post_id);
+        update_post_meta($post_id, "iu_forms", true);
+    }
+}
+$posts = getConfig();
+$posts = isset($posts["posts"]) ? $posts["posts"] : [];
+if (count($posts) > 0) {
+
+    register_activation_hook(__FILE__, 'my_plugin_activate');
+}
 
 function iu_forms_submenu_init()
 {
-    $config = getConfig();
-    $pages = $config["pages"];
+    $pages = getConfig("pages");
 
+    $pages = isset($pages) ? $pages : [];
     foreach ($pages as $page) {
-        $location = $page["location"];
 
+        $location = $page["location"];
         if (is_numeric($location)) {
             if (isset($page["option_page"]) && $page["option_page"]) {
                 add_options_page(
@@ -109,11 +143,13 @@ add_action('admin_menu', 'iu_forms_submenu_init');
 
 function iu_forms_submenu_display()
 {
-    $config = getConfig();
-    if ($config["pages"]) {
-        $pages = $config["pages"];
+    $pages = getConfig("pages");
+    $pages = isset($pages) ? $pages : [];
+
+    if ($pages) {
         foreach ($pages as $key => $value) {
-            $page = $value["page"];
+            $page = isset($value["page"]) ? $value["page"] : [];
+            $post = isset($value["post"]) ? $value["post"] : false;
             foreach ($page as $key => $src) {
                 if ($src) {
                     $path =  plugin_dir_path(__FILE__) . $src;
@@ -123,6 +159,7 @@ function iu_forms_submenu_display()
         }
     }
 }
+
 function custom_forms_enqueue_specific_admin_scripts()
 {
     $config = getConfig();
@@ -249,8 +286,6 @@ function iu_forms_create_tables()
     }
 }
 
-
-
 if (count(getDB("tables")) > 0) {
     register_activation_hook(__FILE__, 'iu_forms_create_tables');
     $src = plugin_dir_path(__FILE__) . "controllers/DatabaseController.php";
@@ -260,6 +295,7 @@ if (count(getDB("tables")) > 0) {
         include_once plugin_dir_path(__FILE__) . "API.php";
     }
 }
+
 
 function request_api($methos, $url, $headers = null, $body = null)
 {
@@ -282,3 +318,29 @@ function request_api($methos, $url, $headers = null, $body = null)
         return $response;
     }
 }
+
+//quitar acciones al desactivar el plugin
+function my_plugin_deactivate()
+{
+    //borar todos los post de cualquier post_type que tenga el meta_key 'iu_forms'
+    $args = array(
+        'post_type' => 'any',
+        'meta_query' => array(
+            array(
+                'key' => 'iu_forms',
+                'value' => true,
+                'compare' => '=',
+            )
+        )
+    );
+    $posts = get_posts($args);
+
+    foreach ($posts as $post) {
+        wp_delete_post($post->ID, true);
+    }
+}
+register_deactivation_hook(__FILE__, 'my_plugin_deactivate');
+//crear una clase que maneje todo el codigo anterior
+
+
+*/

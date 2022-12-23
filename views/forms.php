@@ -1,9 +1,5 @@
 <?php
 //obtener instancia de wpdb
-global $wpdb;
-$api_url =  home_url() . "/wp-json/api/uiplugin/v1/forms";
-$response = wp_remote_get($api_url);
-$data = json_decode(wp_remote_retrieve_body($response), true);
 
 ?>
 <div class="app py-5 px-4 app-forms-se">
@@ -16,24 +12,15 @@ $data = json_decode(wp_remote_retrieve_body($response), true);
                 <thead>
                     <tr>
                         <th>id</th>
-                        <th>name</th>
-                        <th>category</th>
-                        <th>description</th>
                         <th>Download</th>
-                        <th>created_at</th>
-                        <th>updated_at</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Updated</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    foreach ($data as $row) {
-                        echo "<tr>";
-                        foreach ($row as $key => $value) {
-                            echo "<td>$value</td>";
-                        }
-                        echo "</tr>";
-                    }
-                    ?>
+
                 </tbody>
             </table>
         </div>

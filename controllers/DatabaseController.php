@@ -64,15 +64,25 @@ class DatabaseController
         $wpdb = $wpdb;
 
         $table_name = $prefix . $table;
-        $sql = "UPDATE $table_name SET update_at = CURRENT_TIMESTAMP, ";
+        $sql = "UPDATE $table_name SET updated_at = CURRENT_TIMESTAMP, ";
         $columns = "";
         foreach ($data as $key => $value) {
-            $columns .= $key . " = '" . $value . "',";
+            if ($key != "id") {
+                $columns .= $key . " = '" . $value . "',";
+            }
         }
         $columns = substr($columns, 0, -1);
         $sql .= $columns . " WHERE id = $id";
-        $result = $wpdb->query($sql);
-        return $result;
+
+        try {
+            $wpdb->query($sql);
+            // Retrieve the updated record
+            $sql = "SELECT * FROM $table_name WHERE id = $id";
+            $result = $wpdb->get_results($sql, ARRAY_A);
+            return $result;
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
     }
     public static function delete($table, $id)
     {
@@ -82,7 +92,17 @@ class DatabaseController
 
         $table_name = $prefix . $table;
         $sql = "DELETE FROM $table_name WHERE id = $id";
-        $result = $wpdb->query($sql);
+        try {
+            $result = $wpdb->query($sql);
+            if ($result) {
+                $result = true;
+            } else {
+                $result = false;
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+
         return $result;
     }
 }
