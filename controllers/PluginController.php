@@ -21,6 +21,8 @@ class plugin extends callbacks
     }
     public function install()
     {
-        $this->create_plugin_tables($this->db);
+        if (isset($this->db['tables']) && !empty($this->db['tables'])) {
+            $this->create_plugin_tables($this->db);
+        }
     }
 }
