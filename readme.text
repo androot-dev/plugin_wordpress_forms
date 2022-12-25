@@ -1,0 +1,105 @@
+config.json 
+{
+    "plugin_folder_name": "ui-forms",
+    "pages": [
+        {
+            "src": "views/forms.php",
+            "menu": {
+                "title": "IU Forms",
+                "menu": "IU Forms",
+                "slug": "iu-forms",
+                "icon": "dashicons-feedback",
+                "permission": "manage_options",
+                "location": 4,
+                "option_page": false
+            },
+            "resources": {
+                "scripts": [
+                    "js/bootstrap.js"
+                ],
+                "styles": [
+                    "css/bootstrap.css",
+                    "css/theme.css"
+                ]
+            }
+        }
+    ],
+    "register_post_type": [    
+        {
+            "name": "plug",
+            "privacy": "public",
+            "options": {
+                "rewrite_slug": "forms"
+            }
+        }
+    ],
+    "posts": [
+        {
+            "post_title": "Plug Page",
+            "post_content": "views/forms.php",
+            "post_type": "plug",
+            "post_status": "publish",
+            "post_name": "plug_form",
+            "post_parent": 0
+        },
+        {
+            "post_title": "Page Basic",
+            "post_content": "views/forms.php",
+            "post_type": "page",
+            "post_status": "publish",
+            "post_name": "form",
+            "post_parent": 0
+        }
+    ]
+}
+
+
+
+
+
+
+/*******************V.2*******************/
+
+
+{
+    "plugin_folder_name": "ui-forms",
+    "meta_key": "ui_forms",
+    "pages": [
+        {
+            "src": "views/forms.php",
+            "menu": {
+                "title": "IU Forms",
+                "menu": "IU Forms",
+                "slug": "iu-forms",
+                "icon": "dashicons-feedback",
+                "permission": "manage_options",
+                "location": 4,
+                "option_page": false
+            },
+            "resources": {
+                "scripts": [
+                    "js/bootstrap.js"
+                ],
+                "styles": [
+                    "css/bootstrap.css",
+                    "css/theme.css"
+                ]
+            }
+        }
+    ],
+    "register_post_type": null,
+    "posts": [
+        {
+            "post_title": "Page Basic",
+            "post_content": "views/forms.php",
+            "post_type": "page",
+            "post_status": "publish",
+            "post_name": "form",
+            "post_parent": 0,
+            "menu_order": -1,
+            "meta": {
+                "page_template": "views/templates/page-myadmin.php"
+            }
+        }
+    ]
+}

@@ -1,3 +1,0 @@
-<header>
-    hola mundo
-</header>

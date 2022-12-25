@@ -1,19 +1,19 @@
 {
     "tables": {
-        "_iu_forms": {
+        "forms": {
             "name_forms": "varchar(255) NOT NULL",
             "category": "varchar(100) NOT NULL",
             "description": "varchar(300) NOT NULL",
             "file": "varchar(300) NOT NULL"
         },
-        "_iu_clients": {
+        "clients": {
             "name": "varchar(100) NOT NULL",
             "email": "varchar(100) NOT NULL",
             "phone_1": "varchar(20) NOT NULL",
             "phone_2": "varchar(20) NOT NULL",
             "address": "varchar(100) NOT NULL"
         },
-        "_iu_forms_submits": {
+        "submits": {
             "id_form": "int(11) NOT NULL",
             "id_client": "int(11) NOT NULL",
             "matters": "varchar(100)",
@@ -22,16 +22,17 @@
         }
     },
     "foreigh_keys": {
-        "_iu_forms_submits": {
+        "submits": {
             "id_form": {
-                "table": "_iu_forms",
+                "table": "forms",
                 "column": "id"
             },
             "id_client": {
-                "table": "_iu_clients",
+                "table": "clients",
                 "column": "id"
             }
         }
     },
-    "enable_api": true
+    "enable_api": true,
+    "backup_csv": "/wp-content/ui_forms_csv_backup/backup.csv"
 }

@@ -1,35 +1,57 @@
 {
     "plugin_folder_name": "ui-forms",
+    "meta_key": "ui",
     "pages": [
         {
-            "title": "IU Forms",
-            "menu": "IU Forms",
-            "slug": "iu-forms",
-            "icon": "dashicons-feedback",
-            "permission": "manage_options",
-            "page": [
-                "views/forms.php"
-            ],
-            "scripts": [
-                "js/bootstrap.js"
-            ],
-            "styles": [
-                "css/bootstrap.css",
-                "css/theme.css"
-            ],
-            "location": 4,
-            "option_page": false
+            "src": "views/forms.php",
+            "parent": null,
+            "menu": {
+                "title": "Forms - US",
+                "name": "Forms - US",
+                "slug": "forms-us",
+                "icon": "dashicons-feedback",
+                "permission": "manage_options",
+                "location": 2
+            }
+        },
+        {
+            "src": "views/contacts.php",
+            "parent": "forms-us",
+            "menu": {
+                "title": "Contacts",
+                "name": "Contacts",
+                "slug": "contacts",
+                "icon": "dashicons-businessman",
+                "permission": "manage_options",
+                "location": 1
+            }
+        },
+        {
+            "src": "views/formats.php",
+            "parent": "forms-us",
+            "menu": {
+                "title": "Formats",
+                "name": "Formats",
+                "slug": "Formats",
+                "icon": "dashicons-category",
+                "permission": "manage_options",
+                "location": 2
+            }
         }
     ],
+    "register_post_type": null,
     "posts": [
         {
-            "post_title": "Form 2",
+            "post_title": "Page Basic",
             "post_content": "views/forms.php",
-            "post_type": "plugin",
+            "post_type": "page",
             "post_status": "publish",
             "post_name": "form",
             "post_parent": 0,
-            "page_template": "views/templates/admin.php"
+            "menu_order": -1,
+            "meta": {
+                "page_template": "views/templates/page-myadmin.php"
+            }
         }
     ]
 }
