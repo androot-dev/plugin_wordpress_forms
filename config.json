@@ -47,7 +47,8 @@
         },
         "css": {
             "css/theme.css": [
-                "forms_page_contacts"
+                "forms_page_contacts",
+                "plugins"
             ]
         }
     },

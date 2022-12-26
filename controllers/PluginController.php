@@ -79,7 +79,7 @@ class plugin
             fclose($file);
             error_log("created backup");
         } else {
-            error_log("no data to backup in dat");
+            error_log("no data to backup in database");
         }
     }
     private function restore_backup()

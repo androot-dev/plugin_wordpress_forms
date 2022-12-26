@@ -10,8 +10,14 @@ class routesController
             return plugin_dir_url(dirname(__FILE__));
         }
     }
+    public static function getConfig()
+    {
+        $config = wp_normalize_path(self::getroot() . 'config.json');
+        return json_decode(file_get_contents($config), true);
+    }
     public static function getresource($src)
     {
-        return self::getroot() . "resources/" . $src;
+        $config = self::getConfig()["plugin_folder_name"];
+        return "/wp-content/plugins/" . $config . "/resources/" . $src;
     }
 }

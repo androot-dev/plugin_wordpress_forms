@@ -264,8 +264,9 @@ class postController
                 $menu_order = $post["menu_order"];
                 unset($post["menu_order"]);
             }
+            error_log(routesController::getroot());
+            $post_content = isset($post["post_content"]) ? routesController::getroot() . $post["post_content"] : "";
 
-            $post_content = isset($post["post_content"]) ? plugin::root() . $post["post_content"] : "";
             if ($post_content) {
                 $post["post_content"] = $post_content;
             }
@@ -276,7 +277,7 @@ class postController
                 update_post_meta($post_id, "menu_order", $menu_order);
             }
             foreach ($meta as $key => $value) {
-                $post_template = isset($value) ? plugin::root()  . $value : "";
+                $post_template = isset($value) ? routesController::getroot()  . $value : "";
 
                 $post_template = base64_encode($post_template);
                 if ($post_template) {
@@ -371,7 +372,7 @@ class resourcesController
             foreach ($js as $key => $value) {
                 $count++;
                 if (is_array($value)) {
-                    $url =  RoutesController::getresource($key);
+                    $url =  routesController::getresource($key);
 
                     if (in_array($slug, $value)) {
                         wp_enqueue_script("{$tag}_auto_script_array" . $count, $url, array(), false, true);
@@ -403,7 +404,7 @@ class resourcesController
             foreach ($css as $key => $value) {
                 $count++;
                 if (is_array($value)) {
-                    $url =   RoutesController::getresource($key);
+                    $url =   routesController::getresource($key);
 
                     if (in_array($slug, $value)) {
                         wp_enqueue_style("{$tag}_auto_style_array" . $count, $url, array(), false, "all");
