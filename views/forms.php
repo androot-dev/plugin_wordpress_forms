@@ -26,8 +26,8 @@
         </div>
     </div>
 </div>
-<?php $src = getConfig("root"); ?>
-<script src="<?php echo $src; ?>js/vue3.js"></script>
+<?php $src = routesController::getresource("js/vue3.js"); ?>
+<script src="<?php echo $src; ?>"></script>
 <script>
 const app = Vue.createApp({
     data() {

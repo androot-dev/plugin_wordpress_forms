@@ -321,6 +321,7 @@ class menusController
 
         foreach ($pages as $page) {
             $parent = isset($page["parent"]) ? $page["parent"] : "";
+            $src = $page["src"];
             if ($parent) {
                 add_submenu_page(
                     $parent,
@@ -328,9 +329,8 @@ class menusController
                     $page["menu"]['name'],
                     $page["menu"]['permission'],
                     $page["menu"]['slug'],
-                    function () {
-                        global $page;
-                        menusController::display(get_current_screen(), $page);
+                    function ($page) use ($src) {
+                        menusController::display($page, $src);
                     },
                     $page["menu"]["location"],
                     $page["menu"]['icon']
@@ -341,9 +341,8 @@ class menusController
                     $page["menu"]['name'],
                     $page["menu"]['permission'],
                     $page["menu"]['slug'],
-                    function () {
-                        global $page;
-                        menusController::display(get_current_screen(), $page);
+                    function ($page) use ($src) {
+                        menusController::display($page, $src);
                     },
                     $page["menu"]['icon'],
                     $page["menu"]['location']
@@ -351,10 +350,16 @@ class menusController
             }
         }
     }
-    private static function display($screen, $page)
+    private static function display($page, $src)
     {
-        if ($page) {
-            require_once  $page["src"];
+        $path = plugin_dir_path(__FILE__) . "../" . $src;
+        if (file_exists($path)) {
+            require_once $path;
+        } else {
+            status_header(404);
+            nocache_headers();
+            include(get_query_template('404'));
+            exit;
         }
     }
 }

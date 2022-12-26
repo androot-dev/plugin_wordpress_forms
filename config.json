@@ -7,7 +7,7 @@
             "parent": null,
             "menu": {
                 "title": "Forms - US",
-                "name": "Forms",
+                "name": "Forms - US",
                 "slug": "forms-us",
                 "icon": "dashicons-feedback",
                 "permission": "manage_options",
@@ -18,9 +18,21 @@
             "src": "views/contacts.php",
             "parent": "forms-us",
             "menu": {
+                "title": "Forms",
+                "name": "Forms",
+                "slug": "forms-us",
+                "icon": "dashicons-businessman",
+                "permission": "manage_options",
+                "location": 1
+            }
+        },
+        {
+            "src": "views/contacts.php",
+            "parent": "forms-us",
+            "menu": {
                 "title": "Contacts",
                 "name": "Contacts",
-                "slug": "contacts",
+                "slug": "forms-us-contacts",
                 "icon": "dashicons-businessman",
                 "permission": "manage_options",
                 "location": 1
@@ -32,7 +44,7 @@
             "menu": {
                 "title": "Formats",
                 "name": "Formats",
-                "slug": "Formats",
+                "slug": "forms-us-formats",
                 "icon": "dashicons-category",
                 "permission": "manage_options",
                 "location": 2
@@ -42,7 +54,7 @@
     "resources": {
         "js": {
             "js/sweetalert.js": [
-                "front"
+                "plugins"
             ]
         },
         "css": {
