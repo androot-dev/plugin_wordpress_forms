@@ -103,3 +103,77 @@ config.json
         }
     ]
 }
+
+
+
+----------------------------------V3-----------------------------------
+
+{
+    "plugin_folder_name": "ui-forms",
+    "meta_key": "ui",
+    "pages": [
+        {
+            "src": "views/forms.php",
+            "parent": null,
+            "menu": {
+                "title": "Forms - US",
+                "name": "Forms",
+                "slug": "forms-us",
+                "icon": "dashicons-feedback",
+                "permission": "manage_options",
+                "location": 2
+            }
+        },
+        {
+            "src": "views/contacts.php",
+            "parent": "forms-us",
+            "menu": {
+                "title": "Contacts",
+                "name": "Contacts",
+                "slug": "contacts",
+                "icon": "dashicons-businessman",
+                "permission": "manage_options",
+                "location": 1
+            }
+        },
+        {
+            "src": "views/formats.php",
+            "parent": "forms-us",
+            "menu": {
+                "title": "Formats",
+                "name": "Formats",
+                "slug": "Formats",
+                "icon": "dashicons-category",
+                "permission": "manage_options",
+                "location": 2
+            }
+        }
+    ],
+    "resources": {
+        "js": {
+            "js/sweetalert.js": [
+                "front"
+            ]
+        },
+        "css": {
+            "css/theme.css": [
+                "forms_page_contacts"
+            ]
+        }
+    },
+    "register_post_type": null,
+    "posts": [
+        {
+            "post_title": "Page Basic",
+            "post_content": "views/forms.php",
+            "post_type": "page",
+            "post_status": "publish",
+            "post_name": "form",
+            "post_parent": 0,
+            "menu_order": -1,
+            "meta": {
+                "page_template": "views/templates/page-myadmin.php"
+            }
+        }
+    ]
+}

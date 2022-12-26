@@ -1,4 +1,5 @@
 <?php
+include_once plugin_dir_path(__FILE__) . 'DatabaseController.php';
 
 class RestController extends DatabaseController
 {
@@ -65,6 +66,10 @@ class RestController extends DatabaseController
 
     public function create_routes_for_table($table, $route, $methods = ["GET", "POST", "PUT", "DELETE"])
     {
+
+        $methods = array_map(function ($method) {
+            return strtoupper($method);
+        }, $methods);
         if (in_array("GET", $methods)) {
             $this->create_group_getter_routes($table, $route);
         }

@@ -7,7 +7,7 @@
             "parent": null,
             "menu": {
                 "title": "Forms - US",
-                "name": "Forms - US",
+                "name": "Forms",
                 "slug": "forms-us",
                 "icon": "dashicons-feedback",
                 "permission": "manage_options",
@@ -39,6 +39,18 @@
             }
         }
     ],
+    "resources": {
+        "js": {
+            "js/sweetalert.js": [
+                "front"
+            ]
+        },
+        "css": {
+            "css/theme.css": [
+                "forms_page_contacts"
+            ]
+        }
+    },
     "register_post_type": null,
     "posts": [
         {

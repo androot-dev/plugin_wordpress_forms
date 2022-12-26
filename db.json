@@ -33,6 +33,5 @@
             }
         }
     },
-    "enable_api": true,
-    "backup_csv": "/wp-content/ui_forms_csv_backup/backup.csv"
+    "backup_csv": "ui_forms_csv_backup"
 }

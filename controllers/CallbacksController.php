@@ -84,6 +84,81 @@ class tablesController
             error_log($this->name . ":" . $e->getMessage());
         }
     }
+    public static function getStatus($db, $key)
+    {
+        //verificar si todas las tablas estan vacias si es asi devolver false
+        try {
+            global $wpdb;
+            $json_db = $db;
+            $table_prefix = $wpdb->prefix;
+            $tables_sql = array();
+            foreach ($json_db['tables'] as $table_name => $columns) {
+                $table_name = $key . "_" . $table_name;
+                $table_sql = "SELECT * FROM {$table_prefix}{$table_name};";
+                $tables_sql[] = $table_sql;
+            }
+            foreach ($tables_sql as $sql) {
+                $res = $wpdb->get_results($sql);
+                if (count($res) > 0) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception $e) {
+            error_log($this->name . ":" . $e->getMessage());
+        }
+    }
+    public static function create_backup_data($db, $key)
+    {
+        //retornar un array con las sentencias INSERT Para restaurar los datos
+        $data = [];
+        try {
+            global $wpdb;
+            $json_db = $db;
+            $table_prefix = $wpdb->prefix;
+            $tables_sql = array();
+
+            foreach ($json_db['tables'] as $table_name => $columns) {
+                $table_name = $key . "_" . $table_name;
+                $table_sql = "SELECT * FROM {$table_prefix}{$table_name};";
+                $tables_sql[$table_prefix . "" . $table_name] = $table_sql;
+            }
+            foreach ($tables_sql as $key => $sql) {
+                $res = $wpdb->get_results($sql);
+                foreach ($res as $row) {
+                    $columns = array();
+                    $values = array();
+                    foreach ($row as $column => $value) {
+                        //omitir el id
+                        if ($column == "id") {
+                            continue;
+                        }
+                        $columns[] = $column;
+                        $values[] = $value;
+                    }
+                    $columns = implode(', ', $columns);
+                    $values = implode("', '", $values);
+                    $data[] = "INSERT INTO {$key} ({$columns}) VALUES ('{$values}');";
+                }
+            }
+
+            return $data;
+        } catch (Exception $e) {
+            error_log($this->name . ":" . $e->getMessage());
+        }
+    }
+    public static function restore_backup_data($data)
+    {
+        //data es un array con las sentencias INSERT
+        try {
+            global $wpdb;
+            foreach ($data as $sql) {
+                $wpdb->query($sql);
+            }
+        } catch (Exception $e) {
+            error_log($this->name . ":" . $e->getMessage());
+        }
+    }
 }
 class postController
 {
@@ -253,6 +328,7 @@ class menusController
                     $page["menu"]['permission'],
                     $page["menu"]['slug'],
                     function () {
+                        global $page;
                         menusController::display(get_current_screen(), $page);
                     },
                     $page["menu"]["location"],
@@ -265,6 +341,7 @@ class menusController
                     $page["menu"]['permission'],
                     $page["menu"]['slug'],
                     function () {
+                        global $page;
                         menusController::display(get_current_screen(), $page);
                     },
                     $page["menu"]['icon'],
@@ -275,8 +352,109 @@ class menusController
     }
     private static function display($screen, $page)
     {
-        if ($pages) {
+        if ($page) {
             require_once  $page["src"];
+        }
+    }
+}
+class resourcesController
+{
+    public static function add_enqueue_scripts($config)
+    {
+        $screen = get_current_screen();
+        $slug = $screen->base;
+        $tag = $config["meta_key"];
+        $loads = 0;
+        if (isset($config["resources"]["js"])) {
+            $js = $config["resources"]["js"];
+            $count = 0;
+            foreach ($js as $key => $value) {
+                $count++;
+                if (is_array($value)) {
+                    $url =  RoutesController::getresource($key);
+
+                    if (in_array($slug, $value)) {
+                        wp_enqueue_script("{$tag}_auto_script_array" . $count, $url, array(), false, true);
+                        $loads++;
+                    } else if (in_array("admin", $value) && is_admin()) {
+                        wp_enqueue_script("{$tag}_auto_script_admin" . $count, $url, array(), false, true);
+                        $loads++;
+                    } else if (in_array("public", $value)) {
+                        wp_enqueue_script("{$tag}_auto_script_public" . $count, $url, array(), false, true);
+                        $loads++;
+                    } else if (in_array("front", $value) && !is_admin()) {
+                        wp_enqueue_script("{$tag}_auto_script_front" . $count, $url, array(), false, true);
+                        $loads++;
+                    }
+                }
+            }
+        }
+        error_log("{$loads} styles loads in {$slug}");
+    }
+    public static function add_enqueue_styles($config)
+    {
+        $screen = get_current_screen();
+        $slug = $screen->base;
+        $tag = $config["meta_key"];
+        $loads = 0;
+        if (isset($config["resources"]["css"])) {
+            $css = $config["resources"]["css"];
+            $count = 0;
+            foreach ($css as $key => $value) {
+                $count++;
+                if (is_array($value)) {
+                    $url =   RoutesController::getresource($key);
+
+                    if (in_array($slug, $value)) {
+                        wp_enqueue_style("{$tag}_auto_style_array" . $count, $url, array(), false, "all");
+                        $loads++;
+                    } else if (in_array("admin", $value) && is_admin()) {
+                        wp_enqueue_style("{$tag}_auto_style_admin" . $count, $url, array(), false, "all");
+                        $loads++;
+                    }
+                }
+            }
+        }
+        error_log("{$loads} styles loads in {$slug}");
+    }
+    public static function remove_enqueue_scripts($config)
+    {
+        $screen = get_current_screen();
+        $slug = $screen->base;
+        $tag = $config["meta_key"];
+        if (isset($config["resources"]["js"])) {
+            $js = $config["resources"]["js"];
+            $count = 0;
+            foreach ($js as $key => $value) {
+                $count++;
+                if (is_array($value)) {
+                    if (in_array($slug, $value)) {
+                        wp_dequeue_script("{$tag}_auto_script_array" . $count);
+                    } else if (in_array("admin", $value) && is_admin()) {
+                        wp_dequeue_script("{$tag}_auto_script_admin" . $count);
+                    }
+                }
+            }
+        }
+    }
+    public static function remove_enqueue_styles($config)
+    {
+        $screen = get_current_screen();
+        $slug = $screen->base;
+        $tag = $config["meta_key"];
+        if (isset($config["resources"]["css"])) {
+            $css = $config["resources"]["css"];
+            $count = 0;
+            foreach ($css as $key => $value) {
+                $count++;
+                if (is_array($value)) {
+                    if (in_array($slug, $value)) {
+                        wp_dequeue_style("{$tag}_auto_style_array" . $count);
+                    } else if (in_array("admin", $value) && is_admin()) {
+                        wp_dequeue_style("{$tag}_auto_style_admin" . $count);
+                    }
+                }
+            }
         }
     }
 }
