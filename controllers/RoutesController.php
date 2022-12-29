@@ -1,6 +1,6 @@
 <?php
 
-class routesController
+class RoutesController
 {
     public static function  getroot($param = "relative")
     {
@@ -25,5 +25,10 @@ class routesController
     {
         $config = self::getConfig()["plugin_folder_name"];
         return "/wp-content/plugins/" . $config . "/views/" . $src;
+    }
+    public static function gettemplate($src)
+    {
+        $config = self::getConfig()["plugin_folder_name"];
+        return "/wp-content/plugins/" . $config . "/views/templates/" . $src;
     }
 }

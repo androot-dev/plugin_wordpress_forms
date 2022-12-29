@@ -1,6 +1,6 @@
 <?php
 
-class plugin
+class PluginController
 {
     public function __construct()
     {
@@ -36,30 +36,30 @@ class plugin
     public function install()
     {
         if (isset($this->db['tables']) && !empty($this->db['tables'])) {
-            tablesController::create_plugin_tables($this->db, $this->config["meta_key"]);
+            TablesCallbacks::create_plugin_tables($this->db, $this->config["meta_key"]);
         }
         if (isset($this->config['posts']) && !empty($this->config['posts'])) {
-            postController::create_posts($this->config);
+            PostCallbacks::create_posts($this->config);
         }
         $this->restore_backup();
     }
     public function desactive()
     {
         if (isset($this->config['posts']) && !empty($this->config['posts'])) {
-            postController::delete_posts($this->config);
+            PostCallbacks::delete_posts($this->config);
         }
         if (isset($this->db['tables']) && !empty($this->db['tables'])) {
             $this->backup_data();
-            tablesController::delete_plugin_tables($this->db, $this->config["meta_key"]);
+            TablesCallbacks::delete_plugin_tables($this->db, $this->config["meta_key"]);
         }
 
-        Hooks::remove_hooks($this->config);
+        HooksController::remove_hooks($this->config);
     }
     private function backup_data()
     {
 
         $new_folder = isset($this->db["backup_csv"]) ? $this->db["backup_csv"] : null;
-        $status = tablesController::getStatus($this->db, $this->config["meta_key"]);
+        $status = TablesCallbacks::getStatus($this->db, $this->config["meta_key"]);
         if ($status) {
             //dividir el dir en partes 
             $dir = explode("/", $new_folder);
@@ -69,7 +69,7 @@ class plugin
             $dir = wp_normalize_path("wp-content/" . $dir);
             $dir = wp_normalize_path(ABSPATH . $dir);
             wp_mkdir_p($dir);
-            $data_for_file_csv = tablesController::create_backup_data($this->db, $this->config["meta_key"]);
+            $data_for_file_csv = TablesCallbacks::create_backup_data($this->db, $this->config["meta_key"]);
             $file = $dir . "/backup_" . $this->name . ".csv";
             $file = wp_normalize_path($file);
             $file = fopen($file, "w");
@@ -104,7 +104,7 @@ class plugin
                 $data = array_map(function ($item) {
                     return $item;
                 }, $data);
-                tablesController::restore_backup_data($data);
+                TablesCallbacks::restore_backup_data($data);
             }
         }
         //});

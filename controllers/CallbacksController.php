@@ -1,7 +1,7 @@
 <?php
 require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-class tablesController
+class TablesCallbacks
 {
     public static function create_plugin_tables($db, $key)
     {
@@ -160,7 +160,7 @@ class tablesController
         }
     }
 }
-class postController
+class PostCallbacks
 {
     public static function create_post_type($name, $config = "private", $options = [])
     {
@@ -229,7 +229,7 @@ class postController
     }
     public static function filter_force_template($template)
     {
-        $meta = plugin::getConfig();
+        $meta = PluginController::getConfig();
         $meta = $meta["meta_key"] . "_page_template";
         $post = get_post_meta(get_the_ID(), $meta, true); // devuelve directorio de la plantilla
         if ($post) {
@@ -264,8 +264,8 @@ class postController
                 $menu_order = $post["menu_order"];
                 unset($post["menu_order"]);
             }
-            error_log(routesController::getroot());
-            $post_content = isset($post["post_content"]) ? routesController::getroot() . $post["post_content"] : "";
+            error_log(RoutesController::getroot());
+            $post_content = isset($post["post_content"]) ? RoutesController::getroot() . $post["post_content"] : "";
 
             if ($post_content) {
                 $post["post_content"] = $post_content;
@@ -277,7 +277,7 @@ class postController
                 update_post_meta($post_id, "menu_order", $menu_order);
             }
             foreach ($meta as $key => $value) {
-                $post_template = isset($value) ? routesController::getroot()  . $value : "";
+                $post_template = isset($value) ? RoutesController::getroot()  . $value : "";
 
                 $post_template = base64_encode($post_template);
                 if ($post_template) {
@@ -311,17 +311,31 @@ class postController
         }
     }
 }
-class menusController
+class MenusCallbacks
 {
+
     public static function action_create_menu()
     {
-        $config = plugin::getConfig();
+        $config = PluginController::getConfig();
         $pages = $config["pages"];
         $pages = isset($pages) ? $pages : [];
+        function display($page, $src)
+        {
+            $path = plugin_dir_path(__FILE__) . "../" . $src;
+            if (file_exists($path)) {
 
+                require_once $path;
+            } else {
+                status_header(404);
+                nocache_headers();
+                include(get_query_template('404'));
+                exit;
+            }
+        }
         foreach ($pages as $page) {
             $parent = isset($page["parent"]) ? $page["parent"] : "";
             $src = $page["src"];
+
             if ($parent) {
                 add_submenu_page(
                     $parent,
@@ -330,7 +344,7 @@ class menusController
                     $page["menu"]['permission'],
                     $page["menu"]['slug'],
                     function ($page) use ($src) {
-                        menusController::display($page, $src);
+                        display($page, $src);
                     },
                     $page["menu"]["location"],
                     $page["menu"]['icon']
@@ -342,7 +356,7 @@ class menusController
                     $page["menu"]['permission'],
                     $page["menu"]['slug'],
                     function ($page) use ($src) {
-                        menusController::display($page, $src);
+                        display($page, $src);
                     },
                     $page["menu"]['icon'],
                     $page["menu"]['location']
@@ -350,58 +364,67 @@ class menusController
             }
         }
     }
-    private static function display($page, $src)
-    {
-        $path = plugin_dir_path(__FILE__) . "../" . $src;
-        if (file_exists($path)) {
-            require_once $path;
-        } else {
-            status_header(404);
-            nocache_headers();
-            include(get_query_template('404'));
-            exit;
-        }
-    }
 }
-class resourcesController
+class ResourcesCallbacks
 {
+
     public static function add_enqueue_scripts($config)
     {
         $screen = get_current_screen();
         $slug = $screen->base;
         $tag = $config["meta_key"];
         $loads = 0;
+        $packs = isset($config["resources"]["packs"]) ? $config["resources"]["packs"] : array();
+
         if (isset($config["resources"]["js"])) {
             $js = $config["resources"]["js"];
             $count = 0;
             foreach ($js as $key => $value) {
                 $count++;
                 if (is_array($value)) {
-                    $url =  routesController::getresource($key);
-
+                    if (count($packs) > 0) {
+                        $list = array_filter($value, function ($item) {
+                            return explode(".", $item)[0] == "packs";
+                        });
+                        if (count($list) > 0) {
+                            $list = array_map(function ($item) {
+                                return explode(".", $item);
+                            }, $list);
+                            foreach ($list as $item) {
+                                $name_pack = $item[1];
+                                $url =  RoutesController::getresource($key);
+                                if (in_array("admin", $packs[$name_pack]) && is_admin()) {
+                                    wp_enqueue_script("{$tag}_auto_script_admin" . $count, $url, array(), false, true);
+                                    $loads++;
+                                } else if (in_array($slug, $packs[$name_pack])) {
+                                    wp_enqueue_script("{$tag}_auto_script_array" . $count, $url, array(), false, true);
+                                    $loads++;
+                                }
+                            }
+                        }
+                    }
                     if (in_array($slug, $value)) {
-                        wp_enqueue_script("{$tag}_auto_script_array" . $count, $url, array(), false, true);
-                        $loads++;
-                    } else if (in_array("admin", $value) && is_admin()) {
-                        wp_enqueue_script("{$tag}_auto_script_admin" . $count, $url, array(), false, true);
-                        $loads++;
-                    } else if (in_array("public", $value)) {
-                        wp_enqueue_script("{$tag}_auto_script_public" . $count, $url, array(), false, true);
-                        $loads++;
-                    } else if (in_array("front", $value) && !is_admin()) {
-                        wp_enqueue_script("{$tag}_auto_script_front" . $count, $url, array(), false, true);
-                        $loads++;
+                        $url =  RoutesController::getresource($key);
+
+                        if (in_array("admin", $value) && is_admin()) {
+                            wp_enqueue_script("{$tag}_auto_script_admin" . $count, $url, array(), false, true);
+                            $loads++;
+                        } else if (in_array($slug, $value)) {
+                            wp_enqueue_script("{$tag}_auto_script_array" . $count, $url, array(), false, true);
+                            $loads++;
+                        }
                     }
                 }
             }
         }
-        error_log("{$loads} styles loads in {$slug}");
+        error_log("{$loads} scripts loads in {$slug}");
     }
     public static function add_enqueue_styles($config)
     {
         $screen = get_current_screen();
         $slug = $screen->base;
         $tag = $config["meta_key"];
+        $packs = isset($config["resources"]["packs"]) ? $config["resources"]["packs"] : array();
         $loads = 0;
         if (isset($config["resources"]["css"])) {
             $css = $config["resources"]["css"];
@@ -409,14 +432,36 @@ class resourcesController
             foreach ($css as $key => $value) {
                 $count++;
                 if (is_array($value)) {
-                    $url =   routesController::getresource($key);
-
+                    if (count($packs) > 0) {
+                        $list = array_filter($value, function ($item) {
+                            return explode(".", $item)[0] == "packs";
+                        });
+                        if (count($list) > 0) {
+                            $list = array_map(function ($item) {
+                                return explode(".", $item);
+                            }, $list);
+                            foreach ($list as $item) {
+                                $name_pack = $item[1];
+                                $url =  RoutesController::getresource($key);
+                                if (in_array("admin", $packs[$name_pack]) && is_admin()) {
+                                    wp_enqueue_style("{$tag}_auto_style_admin" . $count, $url, array(), false, "all");
+                                    $loads++;
+                                } else if (in_array($slug, $packs[$name_pack])) {
+                                    wp_enqueue_style("{$tag}_auto_style_array" . $count, $url, array(), false, "all");
+                                    $loads++;
+                                }
+                            }
+                        }
+                    }
                     if (in_array($slug, $value)) {
-                        wp_enqueue_style("{$tag}_auto_style_array" . $count, $url, array(), false, "all");
-                        $loads++;
-                    } else if (in_array("admin", $value) && is_admin()) {
-                        wp_enqueue_style("{$tag}_auto_style_admin" . $count, $url, array(), false, "all");
-                        $loads++;
+                        $url =  RoutesController::getresource($key);
+                        if (in_array("admin", $value) && is_admin()) {
+                            wp_enqueue_style("{$tag}_auto_style_admin" . $count, $url, array(), false, "all");
+                            $loads++;
+                        } else if (in_array($slug, $value)) {
+                            wp_enqueue_style("{$tag}_auto_style_array" . $count, $url, array(), false, "all");
+                            $loads++;
+                        }
                     }
                 }
             }

@@ -1,12 +1,10 @@
 <?php
-include_once plugin_dir_path(__FILE__) . 'DatabaseController.php';
 
 class RestController extends DatabaseController
 {
     public function __construct($fragments_base)
     {
         $this->base = $fragments_base;
-        $this->config = plugin::getConfig();
     }
     public function register_api_route($route, $params)
     {
@@ -18,7 +16,7 @@ class RestController extends DatabaseController
     }
     public function create_group_getter_routes($table, $route)
     {
-        $table = $this->config["meta_key"] . "_" . $table;
+        $table =  $table;
         $this->register_api_route($route, array(
             'methods' => 'GET',
             'callback' => function ($request) use ($table) {
@@ -34,7 +32,7 @@ class RestController extends DatabaseController
     }
     public function create_group_poster_routes($table, $route)
     {
-        $table = $this->config["meta_key"] . "_" . $table;
+        $table = $table;
         $this->register_api_route($route, array(
             'methods' => 'POST',
             'callback' => function ($request) use ($table) {
@@ -44,7 +42,7 @@ class RestController extends DatabaseController
     }
     public function create_group_putter_routes($table, $route)
     {
-        $table = $this->config["meta_key"] . "_" . $table;
+        $table =  $table;
         $this->register_api_route($route . "/(?P<id>\d+)", array(
             'methods' => 'PUT',
             'callback' => function ($request) use ($table) {
@@ -55,7 +53,7 @@ class RestController extends DatabaseController
     }
     public function create_group_deleter_routes($table, $route)
     {
-        $table = $this->config["meta_key"] . "_" . $table;
+        $table =  $table;
         $this->register_api_route($route . "/(?P<id>\d+)", array(
             'methods' => 'DELETE',
             'callback' => function ($request) use ($table) {
@@ -64,8 +62,11 @@ class RestController extends DatabaseController
         ));
     }
 
-    public function create_routes_for_table($table, $route, $methods = ["GET", "POST", "PUT", "DELETE"])
+    public function create_routes_for_table($table, $route = null, $methods = ["GET", "POST", "PUT", "DELETE"])
     {
+        if ($route == null) {
+            $route = $table;
+        }
 
         $methods = array_map(function ($method) {
             return strtoupper($method);

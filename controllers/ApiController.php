@@ -1,10 +1,30 @@
 <?php
 
-require_once plugin_dir_path(__FILE__) . '/RestController.php';
 
 
-$api =  new RestController("uiplugin/v1");
 
-$api->create_routes_for_table("forms", $route = "forms");
-$api->create_routes_for_table("clients", $route = "clients");
-$api->create_routes_for_table("forms_submits", $route = "forms_submits");
+class ApiController extends RestController
+{
+
+    public function __construct($fragments_base)
+    {
+        parent::__construct($fragments_base);
+    }
+    public function autoApi($arrayTables = null, $param = ["get", "post", "put", "delete"])
+    {
+        if ($arrayTables == null) {
+            $tables =  PluginController::getDb()["tables"];
+            foreach ($tables as $key => $table) {
+                $this->create_routes_for_table($key, null, $param);
+            }
+        } else {
+            foreach ($arrayTables as $table) {
+                $this->create_routes_for_table($table, null, $param);
+            }
+        }
+    }
+    public function manualApi()
+    {
+        /* empty */
+    }
+}

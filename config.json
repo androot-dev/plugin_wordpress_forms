@@ -15,7 +15,7 @@
             }
         },
         {
-            "src": "views/contacts.php",
+            "src": "views/forms.php",
             "parent": "forms-us",
             "menu": {
                 "title": "Forms",
@@ -52,15 +52,36 @@
         }
     ],
     "resources": {
+        "packs": {
+            "plugin": [
+                "forms-us_page_forms-us-contacts",
+                "forms-us_page_forms-us-formats",
+                "toplevel_page_forms-us"
+            ]
+        },
         "js": {
+            "js/vue-compiled.js": [
+                "packs.plugin"
+            ],
             "js/sweetalert.js": [
-                "plugins"
+                "packs.plugin"
+            ],
+            "js/bootstrap.js": [
+                "packs.plugin"
+            ],
+            "js/vue3.js": [
+                "packs.plugin"
             ]
         },
         "css": {
+            "css/vue-compiled.css": [
+                "packs.plugin"
+            ],
+            "css/bootstrap.css": [
+                "packs.plugin"
+            ],
             "css/theme.css": [
-                "forms_page_contacts",
-                "plugins"
+                "packs.plugin"
             ]
         }
     },

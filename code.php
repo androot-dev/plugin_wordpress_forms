@@ -7,16 +7,14 @@ Author: Silvera Enterprises
 */
 
 
-require_once 'controllers/RoutesController.php';
-require_once 'controllers/PluginController.php';
-require_once 'controllers/CallbacksController.php';
-require_once 'controllers/HooksController.php';
-require_once 'controllers/PluginController.php';
-require_once 'controllers/ApiController.php';
+require_once 'autoload.php';
 
-$plugin = new plugin();
+$plugin = new PluginController();
 
 
-add_action("plugins_loaded", function () use ($plugin) {
-    Hooks::add_hooks($plugin->config);
-});
+HooksController::load();
+
+/*
+$api = new ApiController("ui/v1");
+$api->autoApi();
+*/
