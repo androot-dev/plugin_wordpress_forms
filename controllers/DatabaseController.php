@@ -16,11 +16,14 @@ class DatabaseController
                 $id = $value[$replace];
                 $new_key = str_replace(".", "_", $table_new_value);
                 $value[$new_key] = $wpdb->get_results("SELECT $new_value FROM $table_name WHERE id = $id");
+
+
                 if ($value[$new_key] && $value[$new_key] != "empty") {
-                    $value[$new_key] = $value[$new_key][0]->$new_value;
-                } else {
-                    $value[$new_key] = "";
+                    $data[$key][$new_key] = $value[$new_key][0]->$new_value;
                 }
+
+
+                echo "<script>console.log('PHP: " . json_encode($value[$new_key]) . "');</script>";
             }
         }
 

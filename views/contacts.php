@@ -13,7 +13,7 @@ RoutesService::get_template_part("header.php", [
     "title" => "<i style='font-size: 25px;
         margin-bottom: 6px;
         margin-right: 5px;' 
-        class='pi pi-users'></i> Clients"
+        class='pi pi-users'></i>&nbsp;<span class='d-md-block d-none'>IUSI INVESTMENT CORP -&nbsp;</span> CLIENTS"
 ]);
 
 new ViewController("clients", ["create"]);

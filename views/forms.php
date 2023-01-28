@@ -58,7 +58,7 @@ RoutesService::get_template_part("header.php", [
     "title" => "<i style='font-size: 25px;
         margin-bottom: 6px;
         margin-right: 5px;' 
-        class='pi pi-file-o'></i>Clients Forms"
+        class='pi pi-file-o'></i>&nbsp;<span class='d-md-block d-none'>IUSI INVESTMENT CORP -&nbsp;</span>FORMS",
 ]);
 
 ?>
@@ -283,6 +283,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     method: "GET",
                 }).then(response => response.json()).then(data => {
                     if (data && data != "empty") {
+                        //console.log(data);
                         this.forms = data;
                     }
                 }).catch(error => {
@@ -306,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         body: JSON.stringify(this.createform),
                     }).then(response => response.json()).then(res => {
                         if (res) {
-                            console.log(res);
+                            //  console.log(res);
                             if (res == "error") {
                                 Swal.fire({
                                     title: 'Application not created',

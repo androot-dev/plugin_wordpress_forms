@@ -55,7 +55,7 @@ RoutesService::get_template_part("header.php", [
     "title" => "<i style='font-size: 25px;
         margin-bottom: 6px;
         margin-right: 5px;' 
-        class='pi pi-file'></i> Formats",
+        class='pi pi-file'></i> <span class='d-md-block d-none'>IUSI INVESTMENT CORP -&nbsp;</span> FORMATS",
 ]);
 
 ?>

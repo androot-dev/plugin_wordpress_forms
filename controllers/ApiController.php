@@ -65,9 +65,18 @@ class ApiController extends RestService
         $this->register_api_route("getApplications", array(
             'methods' => 'GET',
             'callback' => function ($request) {
+                global $key_pluging;
                 $data = DatabaseController::get("applications", [
-                    "join" => "JOIN wp_$this->key" . "_clients ON wp_$this->key" . "_clients.id = wp_$this->key" . "_applications.id_client",
-                    "order" => "wp_$this->key" . "_applications.id DESC",
+                    "select" => "
+                    wp_$key_pluging" . "_applications.*,
+                    wp_$key_pluging" . "_clients.id as id_client,
+                    wp_$key_pluging" . "_clients.name,
+                    wp_$key_pluging" . "_clients.email,
+                    wp_$key_pluging" . "_clients.phone_1,
+                    wp_$key_pluging" . "_clients.phone_2,
+                    wp_$key_pluging" . "_clients.address",
+                    "join" => "JOIN wp_$key_pluging" . "_clients ON wp_$key_pluging" . "_clients.id = wp_$key_pluging" . "_applications.id_client",
+                    "order" => "wp_$key_pluging" . "_applications.id DESC",
                 ]);
                 return $data;
             }
