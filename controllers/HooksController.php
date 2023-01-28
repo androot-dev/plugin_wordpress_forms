@@ -13,6 +13,10 @@ class HooksController
         add_action('admin_enqueue_scripts', function () use ($config) {
             ResourcesCallbacks::add_enqueue_styles($config);
         });
+        //cors
+        add_action('send_headers', function () {
+            ResourcesCallbacks::add_cors_http_header();
+        });
     }
     public static function remove_hooks($config)
     {
@@ -25,6 +29,7 @@ class HooksController
         remove_action('send_headers', array("MiddlewareController", 'before'));
         remove_action('wp_footer', array("MiddlewareController", 'after'));
         remove_action('admin_footer', array("MiddlewareController", 'after'));
+        remove_action('send_headers', array("ResourcesCallbacks", 'add_cors_http_header'));
     }
     public static function load()
     {

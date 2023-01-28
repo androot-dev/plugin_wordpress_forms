@@ -14,7 +14,6 @@ $plugin = new PluginController();
 
 HooksController::load();
 
-/*
+
 $api = new ApiController("ui/v1");
-$api->autoApi();
-*/
+$api->enable();

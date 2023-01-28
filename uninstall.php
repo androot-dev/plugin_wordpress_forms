@@ -8,6 +8,6 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 require_once plugin_dir_path(__FILE__) . 'controllers/CallbacksController.php';
 require_once plugin_dir_path(__FILE__) . 'controllers/PluginController.php';
 
-$the_plugin = new plugin();
+$the_plugin = new PluginController();
 
 $the_plugin->uninstall();

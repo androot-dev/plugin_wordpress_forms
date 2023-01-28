@@ -5,8 +5,24 @@ class TablesCallbacks
 {
     public static function create_plugin_tables($db, $key)
     {
+        global $wpdb;
+        //tabla adicional
+
+        if ($db["enable_meta_table"]) {
+            $meta_table_plugin = "CREATE TABLE {$wpdb->prefix}{$key}_meta (
+                id int(11) NOT NULL AUTO_INCREMENT,
+                meta_key varchar(255) NOT NULL UNIQUE,
+                meta_value longtext NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY (id)
+            ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+            $wpdb->query($meta_table_plugin);
+        }
+
+
         try {
-            global $wpdb;
+            $wpdb->query("SET FOREIGN_KEY_CHECKS=0;");
             $json_db = $db;
             $table_prefix = $wpdb->prefix;
             $tables_sql = array();
@@ -25,45 +41,56 @@ class TablesCallbacks
                 $table_sql .= ") DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
                 $tables_sql[] = $table_sql;
             }
-
+            error_log(print_r($tables_sql, true));
             $res = dbDelta($tables_sql);
 
-            if (isset($json_db['foreigh_keys'])) {
+            if (isset($json_db['foreing_keys'])) {
                 $relationships_sql = array();
                 $count = 0;
-                foreach ($json_db['foreigh_keys'] as $table_name => $keys) {
+
+                foreach ($json_db['foreing_keys'] as $table_name => $keys) {
                     foreach ($keys as $key_name => $key_definition) {
                         $count++;
-                        $constraint_name = "fk_key_plugin_{$count}";
+                        $constraint_name = "fk_key_{$count}_{$key}_{$table_name}";
                         $table_name2 = $key . "_" . $table_name;
                         $relationship_sql = "ALTER TABLE {$table_prefix}{$table_name2} ADD CONSTRAINT {$constraint_name}  FOREIGN KEY ({$key_name}) REFERENCES {$table_prefix}{$key}_{$key_definition['table']}({$key_definition['column']})";
                         $relationships_sql[] = $relationship_sql;
                     }
                 }
+                error_log(print_r($relationships_sql, true));
                 foreach ($relationships_sql as $sql) {
                     $wpdb->query($sql);
                 }
             }
+
+            $wpdb->query("SET FOREIGN_KEY_CHECKS=1;");
         } catch (Exception $e) {
             error_log($this->name . ":" . $e->getMessage());
         }
     }
     public static function delete_plugin_tables($db, $key)
     {
-        //borrar primero las tablas que tienen llaves foraneas
+        if ($db["enable_meta_table"]) {
+            global $wpdb;
+            $table_prefix = $wpdb->prefix;
+            $meta_table_plugin = "DROP TABLE IF EXISTS {$table_prefix}{$key}_meta;";
+            $wpdb->query($meta_table_plugin);
+        }
+
         try {
             global $wpdb;
+            $wpdb->query("SET FOREIGN_KEY_CHECKS=0;");
             $json_db = $db;
             $table_prefix = $wpdb->prefix;
             $tables_sql = array();
-            if (isset($json_db['foreigh_keys'])) {
+            if (isset($json_db['foreing_keys'])) {
                 $relationships_sql = array();
                 $count = 0;
-                foreach ($json_db['foreigh_keys'] as $table_name => $keys) {
+                foreach ($json_db['foreing_keys'] as $table_name => $keys) {
                     $table_name = $key . "_" . $table_name;
                     foreach ($keys as $key_name => $key_definition) {
                         $count++;
-                        $constraint_name = "fk_key_plugin_{$count}";
+                        $constraint_name = "fk_key_{$count}_{$table_name}";
                         $relationship_sql = "ALTER TABLE {$table_prefix}{$table_name} DROP FOREIGN KEY {$constraint_name};";
                         $relationships_sql[] = $relationship_sql;
                     }
@@ -80,6 +107,45 @@ class TablesCallbacks
             foreach ($tables_sql as $sql) {
                 $wpdb->query($sql);
             }
+            $wpdb->query("SET FOREIGN_KEY_CHECKS=1;");
+        } catch (Exception $e) {
+            error_log($this->name . ":" . $e->getMessage());
+        }
+    }
+    public static function restore_checkpoint($db)
+    {
+        if ($db["checkpoint"]) {
+            //buscar en la carpeta del plugin el archivo checkpoint.sql
+            $file = RoutesService::getroot() . "/checkpoint.sql";
+            //ejecutar
+            if (file_exists($file)) {
+                global $wpdb;
+                $sql = file_get_contents($file);
+                $dbDelta = dbDelta($sql);
+                error_log("checkpoint restored");
+            }
+        }
+    }
+    public static function is_database_empty($db, $key)
+    {
+        try {
+            global $wpdb;
+            $json_db = $db;
+            $table_prefix = $wpdb->prefix;
+            $tables_sql = array();
+            foreach ($json_db['tables'] as $table_name => $columns) {
+                $table_sql = "SELECT * FROM {$table_prefix}{$key}_{$table_name};";
+                $tables_sql[] = $table_sql;
+            }
+            foreach ($tables_sql as $sql) {
+                $res = $wpdb->get_results($sql);
+                if (count($res) > 0) {
+                    error_log("not empty the table {$table_name}");
+                    return false;
+                }
+            }
+            error_log("empty database");
+            return true;
         } catch (Exception $e) {
             error_log($this->name . ":" . $e->getMessage());
         }
@@ -112,15 +178,19 @@ class TablesCallbacks
     {
         //retornar un array con las sentencias INSERT Para restaurar los datos
         $data = [];
+
         try {
             global $wpdb;
+
             $json_db = $db;
             $table_prefix = $wpdb->prefix;
             $tables_sql = array();
 
             foreach ($json_db['tables'] as $table_name => $columns) {
                 $table_name = $key . "_" . $table_name;
+
                 $table_sql = "SELECT * FROM {$table_prefix}{$table_name};";
+
                 $tables_sql[$table_prefix . "" . $table_name] = $table_sql;
             }
             foreach ($tables_sql as $key => $sql) {
@@ -129,10 +199,6 @@ class TablesCallbacks
                     $columns = array();
                     $values = array();
                     foreach ($row as $column => $value) {
-                        //omitir el id
-                        if ($column == "id") {
-                            continue;
-                        }
                         $columns[] = $column;
                         $values[] = $value;
                     }
@@ -141,7 +207,6 @@ class TablesCallbacks
                     $data[] = "INSERT INTO {$key} ({$columns}) VALUES ('{$values}');";
                 }
             }
-
             return $data;
         } catch (Exception $e) {
             error_log($this->name . ":" . $e->getMessage());
@@ -150,12 +215,21 @@ class TablesCallbacks
     public static function restore_backup_data($data)
     {
         //data es un array con las sentencias INSERT
+        global $wpdb;
         try {
-            global $wpdb;
+            $wpdb->query("START TRANSACTION;");
+            $wpdb->query("SET FOREIGN_KEY_CHECKS=0;");
+            $wpdb->query("SET UNIQUE_CHECKS=0;");
             foreach ($data as $sql) {
                 $wpdb->query($sql);
             }
+            $wpdb->query("SET UNIQUE_CHECKS=1;");
+            $wpdb->query("SET FOREIGN_KEY_CHECKS=1;");
+            $wpdb->query("COMMIT;");
         } catch (Exception $e) {
+            $wpdb->query("ROLLBACK;");
+            $wpdb->query("SET UNIQUE_CHECKS=1;");
+            $wpdb->query("SET FOREIGN_KEY_CHECKS=1;");
             error_log($this->name . ":" . $e->getMessage());
         }
     }
@@ -264,8 +338,7 @@ class PostCallbacks
                 $menu_order = $post["menu_order"];
                 unset($post["menu_order"]);
             }
-            error_log(RoutesController::getroot());
-            $post_content = isset($post["post_content"]) ? RoutesController::getroot() . $post["post_content"] : "";
+            $post_content = isset($post["post_content"]) ? RoutesService::getroot() . $post["post_content"] : "";
 
             if ($post_content) {
                 $post["post_content"] = $post_content;
@@ -277,7 +350,7 @@ class PostCallbacks
                 update_post_meta($post_id, "menu_order", $menu_order);
             }
             foreach ($meta as $key => $value) {
-                $post_template = isset($value) ? RoutesController::getroot()  . $value : "";
+                $post_template = isset($value) ? RoutesService::getroot()  . $value : "";
 
                 $post_template = base64_encode($post_template);
                 if ($post_template) {
@@ -392,19 +465,22 @@ class ResourcesCallbacks
                             }, $list);
                             foreach ($list as $item) {
                                 $name_pack = $item[1];
-                                $url =  RoutesController::getresource($key);
+                                $url =  RoutesService::getresource($key);
+
                                 if (in_array("admin", $packs[$name_pack]) && is_admin()) {
                                     wp_enqueue_script("{$tag}_auto_script_admin" . $count, $url, array(), false, true);
                                     $loads++;
                                 } else if (in_array($slug, $packs[$name_pack])) {
+
                                     wp_enqueue_script("{$tag}_auto_script_array" . $count, $url, array(), false, true);
                                     $loads++;
                                 }
                             }
                         }
                     }
+
                     if (in_array($slug, $value)) {
-                        $url =  RoutesController::getresource($key);
+                        $url =  RoutesService::getresource($key);
 
                         if (in_array("admin", $value) && is_admin()) {
                             wp_enqueue_script("{$tag}_auto_script_admin" . $count, $url, array(), false, true);
@@ -442,7 +518,7 @@ class ResourcesCallbacks
                             }, $list);
                             foreach ($list as $item) {
                                 $name_pack = $item[1];
-                                $url =  RoutesController::getresource($key);
+                                $url =  RoutesService::getresource($key);
                                 if (in_array("admin", $packs[$name_pack]) && is_admin()) {
                                     wp_enqueue_style("{$tag}_auto_style_admin" . $count, $url, array(), false, "all");
                                     $loads++;
@@ -454,7 +530,7 @@ class ResourcesCallbacks
                         }
                     }
                     if (in_array($slug, $value)) {
-                        $url =  RoutesController::getresource($key);
+                        $url =  RoutesService::getresource($key);
                         if (in_array("admin", $value) && is_admin()) {
                             wp_enqueue_style("{$tag}_auto_style_admin" . $count, $url, array(), false, "all");
                             $loads++;
@@ -507,5 +583,10 @@ class ResourcesCallbacks
                 }
             }
         }
+    }
+    public static function add_cors_http_header()
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
     }
 }

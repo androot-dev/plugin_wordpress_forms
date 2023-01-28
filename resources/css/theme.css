@@ -1,5 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@500&display=swap');
+
 .app-forms-se{
     --gray: #8A8A8A;
     --dark: #383838;
@@ -10,11 +11,11 @@
     --primary: rgb(1, 70, 133);
     --primary-dark: #003768;
     --primary-light: rgb(230, 227, 253);
-    --scrollbar-color: var(--primary-dark);
+    --scrollbar-color:#cacaca;
     --scrollbar-body-width: 12px;
     --scrollbar-thumb-width: 4.5px;
-    --scrollbar-thumb-radius: 4.5px;
-    --scrollbar-thumb-color: var(--primary-light);
+    --scrollbar-thumb-radius: 0px;
+    --scrollbar-thumb-color: var(--primary-color);
     --primary-gradient:  linear-gradient(to right top, #d0edfc, #dceffe, #e7f2ff, #f0f5ff, #f8f9ff, #f8f9ff, #f8f9ff, #f8f9ff, #f0f5ff, #e7f2ff, #dceffe, #d0edfc);
     --secondary-gradient: linear-gradient(to right, #12397E 0%, #1d6da0 50%, #90d0f4 100%, #90d0f4 100%);
     --font-body-family: "Montserrat", sans-serif;
@@ -23,6 +24,13 @@
     --font-heading-family: "League Spartan", sans-serif;
     --font-body-scale: 1.0;
     --font-body-color: var(--gray);
+}
+body{
+  --scrollbar-color: #cacaca;
+  --scrollbar-body-width: 12px;
+  --scrollbar-thumb-width: 8.5px;
+  --scrollbar-thumb-radius: 0px;
+  --scrollbar-thumb-color:var(--primary-color);
 }
 
 .bg-primary-gradient{
@@ -48,10 +56,12 @@
 .app-forms-se h6 {
     font-family: var(--font-heading-family), sans-serif;
     font-weight: var(--font-heading-weight);
-    margin: 0 0 20px 0;
+    margin: 0 0 0px 0;
     padding: 0;
   }
-
+  .app-forms-se h1, h2{
+    font-weight: 900;
+  }
 @-webkit-keyframes fadeIn {
     from {
       opacity: 0;
@@ -192,7 +202,7 @@
     background-color: var(--scrollbar-color) !important;
   }
   
-  .app-forms-se .scrollbar {
+  .app-forms-se .scrollbar, body {
     scrollbar-width: var(--scrollbar-thumb-width);
     scrollbar-color: var(--scrollbar-thumb-color);
     scroll-behavior: smooth;
@@ -200,14 +210,14 @@
     overflow-y: auto;
 
   }
-  .app-forms-se .scrollbar::-webkit-scrollbar {
+  .app-forms-se .scrollbar::-webkit-scrollbar, body::-webkit-scrollbar {
     width: var(--scrollbar-thumb-width) !important;
     height: var(--scrollbar-thumb-width) !important;
     margin-left: -19px !important;
 
 
   }
- .app-forms-se  .scrollbar::-webkit-scrollbar-thumb {
+ .app-forms-se  .scrollbar::-webkit-scrollbar-thumb , body::-webkit-scrollbar-thumb {
     background: var(--scrollbar-thumb-color)!important;
     border-radius: var(--scrollbar-thumb-radius) !important;
     margin-left: -9px !important;
@@ -219,7 +229,243 @@
   .app-forms-se .scrollbar::-webkit-scrollbar-thumb:active {
     background-color: var(--scrollbar-thumb-color) !important;
   }
+  .app-forms-se .scrollbar-x  {
+    scrollbar-width: var(--scrollbar-thumb-width);
+    scrollbar-color: var(--scrollbar-thumb-color);
+    scroll-behavior: smooth;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+  }
+  .app-forms-se .scrollbar-x::-webkit-scrollbar {
+    width: var(--scrollbar-thumb-width) !important;
+    height: var(--scrollbar-thumb-width) !important;
+    margin-left: -19px !important;
+  }
+  .app-forms-se .scrollbar-x::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-color) !important;
+    border-radius: var(--scrollbar-thumb-radius) !important;
+    margin-left: -9px !important;
+  }
+  .app-forms-se .scrollbar-x::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-color) !important;
+    box-shadow: 0 0 2px 1px rgba(56, 56, 56, 0) !important;
+  }
+  .app-forms-se .scrollbar-x::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-color) !important;
+  }
+   .app-forms-se .scrollbar-xy {
+    scrollbar-width: var(--scrollbar-thumb-width);
+    scrollbar-color: var(--scrollbar-thumb-color);
+    scroll-behavior: smooth;
+    overflow-x: auto;
+    overflow-y: auto;
+   }
+  .app-forms-se .scrollbar-xy::-webkit-scrollbar {
+    width: var(--scrollbar-thumb-width) !important;
+    height: var(--scrollbar-thumb-width) !important;
+    margin-left: -19px !important;
+  }
+  .app-forms-se .scrollbar-xy::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-color) !important;
+    border-radius: var(--scrollbar-thumb-radius) !important;
+    margin-left: -9px !important;
+  }
+  .app-forms-se .scrollbar-xy::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-color) !important;
+    box-shadow: 0 0 2px 1px rgba(56, 56, 56, 0) !important;
+  }
+  .app-forms-se .scrollbar-xy::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-color) !important;
+  }
+  
+ .p-dialog-content::-webkit-scrollbar {
+    width: 8px !important;
+    height: 0px !important;
+    margin-left: -19px !important;
+  }
+  .p-dialog-content::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color) !important;
+    border-radius: 0px !important;
+    margin-left: -9px !important;
+  }
+  .p-dialog-content::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-color) !important;
+    box-shadow: 0 0 2px 1px rgba(56, 56, 56, 0) !important;
+  }
+  .p-dialog-content::-webkit-scrollbar-thumb {
+    background: #c5c5c5;
+  }
+  
+  
+  #wpfooter {
+    display: none;
+  }
+  #wpcontent{
+  padding-left: 0;
+  }
   ul {
     padding: 0 0px;
     margin: 0;
   }
+  /* overwrite wp-admin styles */
+  input[type=color], input[type=date], input[type=datetime-local], input[type=datetime], input[type=email], input[type=month], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text], input[type=time], input[type=url], input[type=week], select, textarea{
+    border: 1px solid #ced4da;
+    color: #495057;
+    min-height: auto;
+    padding: 0.5rem 0.75rem;
+    line-height: inherit;
+  }
+
+  /* overwrite primevue */
+  .p-inputtext:enabled:focus, .p-dropdown:not(.p-disabled).p-focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0px 0px 11px 0rem rgb(162 162 162 / 50%);
+    border-color: #c7c7c7;
+  }
+  .p-dropdown-panel .p-dropdown-items{
+    padding: 0;
+  }
+  .p-dropdown-items-wrapper{
+    border-radius: 0 0 0.25rem 0.25rem;
+  }
+  .p-dropdown-panel .p-dropdown-items .p-dropdown-item:last-child.p-highlight {
+    border-radius: 0 0 0.25rem 0.25rem;
+  }
+  .p-dropdown-panel .p-dropdown-items .p-dropdown-item:first-child.p-highlight {
+    border-radius: 0.25rem 0.25rem 0 0;
+  }
+  .p-dropdown-panel{
+    margin-top: 5px;
+  }
+
+  
+  .p-error-message{
+    color:var(--bs-danger);
+  }
+/* form grid  */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: calc(50% - 10px) calc(50% - 10px);
+  grid-column-gap: 20px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: calc(33.333% - 6.666px) calc(33.333% - 6.666px) calc(33.333% - 6.666px);
+  grid-column-gap: 20px;
+}
+
+.form-grid-2 .field-expanded {
+  grid-column: span 2;
+}
+
+.form-grid-3 .field-expanded {
+  grid-column: span 3;
+}
+
+textarea {
+  height: 130px;
+}
+
+@media (max-width: 768px) {
+  .form-grid-2 {
+      grid-template-columns: 1fr;
+  }
+
+  .form-grid-3 {
+      grid-template-columns: 1fr;
+  }
+
+  .form-grid-2 .field-expanded {
+      grid-column: span 1;
+  }
+
+  .form-grid-3 .field-expanded {
+      grid-column: span 1;
+  }
+}
+
+@keyframes temblor-con-rotacion {
+  0% {
+      transform: translate(1px, 1px) rotate(0deg);
+  }
+
+  20% {
+      transform: translate(-1px, -2px) rotate(-1deg);
+  }
+
+  40% {
+      transform: translate(-3px, 0px) rotate(1deg);
+  }
+
+  60% {
+      transform: translate(3px, 2px) rotate(0deg);
+  }
+
+  80% {
+      transform: translate(1px, -1px) rotate(1deg);
+  }
+
+  100% {
+      transform: translate(-1px, 2px) rotate(-1deg);
+  }
+
+}
+
+@keyframes rotacion-loading {
+  0% {
+      transform: rotate(0deg);
+  }
+
+  100% {
+      transform: rotate(360deg);
+  }
+}
+.lds-ripple {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ripple div {
+  position: absolute;
+  border: 4px solid rgb(58, 145, 238);
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+@keyframes lds-ripple {
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  4.9% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  5% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 72px;
+    height: 72px;
+    opacity: 0;
+  }
+}

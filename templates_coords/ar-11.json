@@ -1,0 +1,178 @@
+[
+    {
+        "serial": {
+            "x": 72,
+            "y": 70,
+            "options": {
+                "font": "courier",
+                "size": 13,
+                "letterspacing": 5
+            }
+        },
+        "first-name": {
+            "x": 98,
+            "y": 58
+        },
+        "middle-name": {
+            "x": 155,
+            "y": 58
+        },
+        "last-name": {
+            "x": 24,
+            "y": 58
+        },
+        "date-of-birth": {
+            "x": 24,
+            "y": 70
+        },
+        "present-street-number-and-name": {
+            "x": 24,
+            "y": 99.5
+        },
+        "present-city-or-town": {
+            "x": 24,
+            "y": 111.5
+        },
+        "present-state": {
+            "x": 141,
+            "y": 111.5,
+            "options": {
+                "size-auto": {
+                    "constant": 1.7,
+                    "container": 15.36,
+                    "min": 4.4,
+                    "max": 10
+                }
+            }
+        },
+        "present-zip-code": {
+            "x": 162,
+            "y": 111.5
+        },
+        "present-number": {
+            "x": 162,
+            "y": 99.5
+        },
+        "present-apt-check": {
+            "conditions-check": [
+                {
+                    "answer": "Apt",
+                    "x": 141.5,
+                    "y": 99
+                },
+                {
+                    "answer": "Ste",
+                    "x": 147.5,
+                    "y": 99
+                },
+                {
+                    "answer": "Flr",
+                    "x": 153.5,
+                    "y": 99
+                }
+            ]
+        },
+        "previous-street-number-and-name": {
+            "x": 24,
+            "y": 130.7
+        },
+        "previous-city-or-town": {
+            "x": 24,
+            "y": 142.7
+        },
+        "previous-state": {
+            "x": 141,
+            "y": 142.7,
+            "options": {
+                "size-auto": {
+                    "constant": 1.7,
+                    "container": 15.36,
+                    "min": 4.4,
+                    "max": 10
+                }
+            }
+        },
+        "previous-zip-code": {
+            "x": 162,
+            "y": 142.7
+        },
+        "previous-number": {
+            "x": 162,
+            "y": 130.7
+        },
+        "previous-apt-check": {
+            "conditions-check": [
+                {
+                    "answer": "Apt",
+                    "x": 141.5,
+                    "y": 130.5
+                },
+                {
+                    "answer": "Ste",
+                    "x": 147.5,
+                    "y": 130.5
+                },
+                {
+                    "answer": "Flr",
+                    "x": 153.5,
+                    "y": 130.5
+                }
+            ]
+        },
+        "mailing-street-number-and-name": {
+            "x": 24,
+            "y": 161.9
+        },
+        "mailing-city-or-town": {
+            "x": 24,
+            "y": 173.9
+        },
+        "mailing-state": {
+            "x": 141,
+            "y": 173.9,
+            "options": {
+                "size-auto": {
+                    "constant": 1.7,
+                    "container": 15.36,
+                    "min": 4.4,
+                    "max": 10
+                }
+            }
+        },
+        "mailing-zip-code": {
+            "x": 162,
+            "y": 173.9
+        },
+        "mailing-number": {
+            "x": 162,
+            "y": 161.9
+        },
+        "mailing-apt-check": {
+            "conditions-check": [
+                {
+                    "answer": "Apt",
+                    "x": 141.5,
+                    "y": 161.7
+                },
+                {
+                    "answer": "Ste",
+                    "x": 147.5,
+                    "y": 161.7
+                },
+                {
+                    "answer": "Flr",
+                    "x": 153.5,
+                    "y": 161.7
+                }
+            ]
+        },
+        "signature": {
+            "x": 24,
+            "y": 197.5
+        },
+        "signature-date": {
+            "x": 158,
+            "y": 197.5
+        }
+    }
+]

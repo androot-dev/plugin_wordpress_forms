@@ -42,6 +42,28 @@ class PluginController
             PostCallbacks::create_posts($this->config);
         }
         $this->restore_backup();
+        $this->enable_checkpoint();
+        $this->create_upload_folder();
+    }
+    private function enable_checkpoint()
+    {
+        if (TablesCallbacks::is_database_empty($this->db, $this->config["meta_key"])) {
+            TablesCallbacks::restore_checkpoint($this->db);
+        }
+    }
+    private function create_upload_folder()
+    {
+        $new_folder = isset($this->config["upload_folder"]) ? $this->config["upload_folder"] : null;
+        if ($new_folder) {
+
+            $dir = explode("/", $new_folder);
+            $dir = array_filter($dir);
+            $dir = array_values($dir);
+            $dir = implode("/", $dir);
+            $dir = wp_normalize_path($dir);
+            $dir = wp_normalize_path(ABSPATH . $dir);
+            wp_mkdir_p($dir);
+        }
     }
     public function desactive()
     {

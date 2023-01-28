@@ -1,37 +1,127 @@
 {
     "tables": {
         "forms": {
-            "name_forms": "varchar(255)",
-            "category": "varchar(100)",
+            "name": "varchar(255) UNIQUE",
             "description": "varchar(300)",
-            "file": "varchar(300)"
+            "categories": "varchar(200)",
+            "url": "varchar(300)",
+            "notes": "varchar(300)"
+        },
+        "collections": {
+            "name": "varchar(100)",
+            "forms_ids": "varchar(100)"
+        },
+        "online_files": {
+            "name": "varchar(100)",
+            "url": "varchar(300) UNIQUE"
+        },
+        "online_files_link_forms": {
+            "id_form": "int(11)",
+            "id_file": "int(11)"
         },
         "clients": {
-            "name": "varchar(100)",
-            "email": "varchar(100)",
+            "name": "varchar(100) NOT NULL",
+            "email": "varchar(100) NOT NULL",
             "phone_1": "varchar(20)",
             "phone_2": "varchar(20)",
             "address": "varchar(100)"
         },
-        "submits": {
-            "id_form": "int(11)",
+        "applications": {
             "id_client": "int(11)",
             "matters": "varchar(100)",
             "status": "varchar(100)",
-            "post_data": "varchar(1000)"
+            "keyform": "varchar(300) UNIQUE",
+            "postData": "TEXT"
+        },
+        "application_link_online_files": {
+            "id_application": "int(11)",
+            "id_file": "int(11)",
+            "id_form": "int(11)"
+        },
+        "uploads": {
+            "id_application": "int(11)",
+            "url": "varchar(300)"
+        },
+        "questions": {
+            "question": "varchar(600) NOT NULL",
+            "type": "varchar(100) NOT NULL",
+            "placeholder": "varchar(200)",
+            "options": "TEXT",
+            "info": "varchar(400)",
+            "class": "varchar(50)",
+            "name_pdf_field": "varchar(500)"
+        },
+        "questions_link_online_files": {
+            "id_file": "int(11)",
+            "id_question": "int(11)",
+            "order_question": "int(11)",
+            "required": "int(11)"
+        },
+        "questions_groups": {
+            "name": "varchar(100) UNIQUE",
+            "questions_ids": "varchar(500)"
+        },
+        "questions_groups_link_online_files": {
+            "id_file": "int(11)",
+            "groups_ids": "varchar(300)"
         }
     },
-    "foreigh_keys": {
-        "submits": {
+    "foreing_keys": {
+        "online_files_link_forms": {
             "id_form": {
                 "table": "forms",
                 "column": "id"
             },
+            "id_file": {
+                "table": "online_files",
+                "column": "id"
+            }
+        },
+        "applications": {
             "id_client": {
                 "table": "clients",
                 "column": "id"
             }
+        },
+        "application_link_online_files": {
+            "id_application": {
+                "table": "applications",
+                "column": "id"
+            },
+            "id_file": {
+                "table": "online_files",
+                "column": "id"
+            },
+            "id_form": {
+                "table": "forms",
+                "column": "id"
+            }
+        },
+        "uploads": {
+            "id_application": {
+                "table": "applications",
+                "column": "id"
+            }
+        },
+        "questions_link_online_files": {
+            "id_file": {
+                "table": "online_files",
+                "column": "id"
+            },
+            "id_question": {
+                "table": "questions",
+                "column": "id"
+            }
+        },
+        "questions_groups_link_online_files": {
+            "id_file": {
+                "table": "online_files",
+                "column": "id"
+            }
         }
     },
-    "backup_csv": "ui_forms_csv_backup"
+    "scheme": "ui_forms",
+    "backup_csv": "backup_iusi_bd",
+    "enable_meta_table": true,
+    "checkpoint": true
 }
